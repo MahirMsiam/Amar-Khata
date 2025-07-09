@@ -1,0 +1,17 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="96" cy="96" r="90" fill="#3F51B5" stroke="#2E3A8A" stroke-width="4"/>
+  
+  <!-- Book/Ledger icon -->
+  <rect x="48" y="60" width="96" height="72" rx="8" fill="white" stroke="#2E3A8A" stroke-width="2"/>
+  
+  <!-- Lines representing text in the ledger -->
+  <line x1="60" y1="78" x2="132" y2="78" stroke="#3F51B5" stroke-width="3"/>
+  <line x1="60" y1="90" x2="132" y2="90" stroke="#3F51B5" stroke-width="3"/>
+  <line x1="60" y1="102" x2="132" y2="102" stroke="#3F51B5" stroke-width="3"/>
+  <line x1="60" y1="114" x2="108" y2="114" stroke="#3F51B5" stroke-width="3"/>
+  
+  <!-- Small decorative elements -->
+  <circle cx="72" cy="66" r="6" fill="#7E57C2"/>
+  <circle cx="120" cy="66" r="6" fill="#7E57C2"/>
+</svg> 
