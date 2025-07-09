@@ -49,7 +49,7 @@
 ![Vehicles](public/screenshots/vehicles.png)
 
 ### Add Vehicle
-![Add Vehicle](public/screenshots/add-vehicle.png)
+![Add Vehicles](public/screenshots/add-vehicle.png)
 
 ### Reports
 ![Reports](public/screenshots/Report.png)
