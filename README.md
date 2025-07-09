@@ -40,7 +40,26 @@
 ## Screenshots
 
 > _Add screenshots here for dashboard, login, mobile view, etc._
+// ... existing code ...
 
+## Screenshots
+
+### Dashboard
+![Dashboard](public/screenshots/Dashboard.png)
+
+### Add Transaction
+![Add Transaction](public/screenshots/Add-transaction.png)
+
+### Vehicles
+![Vehicles](public/screenshots/vehicles.png)
+
+### Add Vehicle
+![Add Vehicle](public/screenshots/add-vehicle.png)
+
+### Reports
+![Reports](public/screenshots/Report.png)
+
+// ... existing code ...
 ---
 
 ## Getting Started
