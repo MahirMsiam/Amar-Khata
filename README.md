@@ -2,6 +2,8 @@
 
 **Amar Khata** is a modern, mobile-friendly Progressive Web App (PWA) for personal and vehicle-based expense and income tracking. Built with Next.js, React, Firebase, and Tailwind CSS, it features real-time analytics, multi-language support (English & Bangla), and a beautiful, glassmorphic UI.
 
+<!-- CI/CD Pipeline Test -->
+
 ---
 
 ## Features
