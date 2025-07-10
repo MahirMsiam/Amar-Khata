@@ -1,3 +1,7 @@
+// src/lib/firebase.ts
+
+console.log("FIREBASE API KEY at build time:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
+
 // Firebase configuration and initialization
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
