@@ -11,7 +11,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 
 interface DeleteVehicleDialogProps {
   open: boolean;
@@ -33,7 +32,7 @@ export function DeleteVehicleDialog({
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete the vehicle
-            "{vehicleName}" and all associated data.
+            &quot;{vehicleName}&quot; and all associated data.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
