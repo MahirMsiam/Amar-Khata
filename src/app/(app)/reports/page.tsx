@@ -81,26 +81,26 @@ export default function ReportsPage() {
       return txDate >= start && txDate <= end;
     });
     // Main report data
-    const data: ReportRow[] = vehicles.map(vehicle => {
+        const data: ReportRow[] = vehicles.map(vehicle => {
       const vehicleTransactions = filteredTx.filter(tx => tx.vehicleId === vehicle.id);
-      const income = vehicleTransactions.filter(tx => tx.type === 'income').reduce((sum, tx) => sum + tx.amount, 0);
-      const expenses = vehicleTransactions.filter(tx => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0);
-      return {
-        vehicleId: vehicle.id,
-        vehicleName: `${vehicle.name} (${vehicle.plateNumber})`,
-        income,
-        expenses,
-        profit: income - expenses,
-      };
-    });
-    const totalRow = data.reduce((acc, item) => ({
-      income: acc.income + item.income,
-      expenses: acc.expenses + item.expenses,
-      profit: acc.profit + item.profit
-    }), { income: 0, expenses: 0, profit: 0 });
-    setReportData(data);
-    setTotals(totalRow);
-    setLoading(false);
+            const income = vehicleTransactions.filter(tx => tx.type === 'income').reduce((sum, tx) => sum + tx.amount, 0);
+            const expenses = vehicleTransactions.filter(tx => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0);
+            return {
+                vehicleId: vehicle.id,
+                vehicleName: `${vehicle.name} (${vehicle.plateNumber})`,
+                income,
+                expenses,
+                profit: income - expenses,
+            };
+        });
+        const totalRow = data.reduce((acc, item) => ({
+            income: acc.income + item.income,
+            expenses: acc.expenses + item.expenses,
+            profit: acc.profit + item.profit
+        }), { income: 0, expenses: 0, profit: 0 });
+        setReportData(data);
+        setTotals(totalRow);
+        setLoading(false);
     // Monthly summary
     const monthly: Record<string, {income: number, expenses: number, profit: number}> = {};
     allTransactions.forEach(tx => {
@@ -110,7 +110,7 @@ export default function ReportsPage() {
       if (tx.type === 'income') monthly[key].income += tx.amount;
       if (tx.type === 'expense') monthly[key].expenses += tx.amount;
       monthly[key].profit = monthly[key].income - monthly[key].expenses;
-    });
+      });
     setMonthlySummary(Object.entries(monthly).map(([month, vals]) => ({ month, ...vals }))); 
   }, [vehicles, allTransactions, startDate, endDate]);
 
@@ -147,18 +147,18 @@ export default function ReportsPage() {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-              <div>
-                  <CardTitle>{t.weeklyReport}</CardTitle>
-                  <CardDescription>Summary of income, expenses, and profit for all vehicles.</CardDescription>
-              </div>
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+            <div>
+                <CardTitle>{t.weeklyReport}</CardTitle>
+                <CardDescription>Summary of income, expenses, and profit for all vehicles.</CardDescription>
+            </div>
               <Button size="sm" variant="outline" onClick={exportToCSV}>
-                  <Download className="mr-2 h-4 w-4" />
-                  {t.exportCSV}
-              </Button>
-          </div>
+                <Download className="mr-2 h-4 w-4" />
+                {t.exportCSV}
+            </Button>
+        </div>
           {/* Date Range Picker */}
           <div className="flex gap-2 mt-4">
             <label className="flex items-center gap-1 text-sm">Start Date:
@@ -168,44 +168,44 @@ export default function ReportsPage() {
               <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="border rounded px-2 py-1 bg-background" />
             </label>
           </div>
-        </CardHeader>
-        <CardContent>
-        {loading ? (
-               <div className="flex items-center justify-center p-8">
-                  <Loader2 className="h-8 w-8 animate-spin" />
-              </div>
-          ) : reportData.length === 0 ? (
-              <p className="text-center text-muted-foreground py-4">No data available to generate a report.</p>
-          ) : (
-              <Table>
-              <TableHeader>
-                  <TableRow>
-                  <TableHead>{t.vehicle}</TableHead>
-                  <TableHead className="text-right">{t.totalIncome}</TableHead>
-                  <TableHead className="text-right">{t.totalExpenses}</TableHead>
-                  <TableHead className="text-right">{t.netProfit}</TableHead>
-                  </TableRow>
-              </TableHeader>
-              <TableBody>
-                  {reportData.map((row) => (
-                  <TableRow key={row.vehicleId}>
-                      <TableCell className="font-medium">{row.vehicleName}</TableCell>
-                      <TableCell className="text-right text-green-600">৳{row.income.toFixed(2)}</TableCell>
-                      <TableCell className="text-right text-red-600">৳{row.expenses.toFixed(2)}</TableCell>
-                      <TableCell className={`text-right font-bold ${row.profit >= 0 ? 'text-blue-600' : 'text-red-600'}`}>৳{row.profit.toFixed(2)}</TableCell>
-                  </TableRow>
-                  ))}
-                  <TableRow className="font-bold bg-muted/50">
-                      <TableCell>Total</TableCell>
-                      <TableCell className="text-right">৳{totals.income.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">৳{totals.expenses.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">৳{totals.profit.toFixed(2)}</TableCell>
-                  </TableRow>
-              </TableBody>
-              </Table>
-          )}
-        </CardContent>
-      </Card>
+      </CardHeader>
+      <CardContent>
+      {loading ? (
+             <div className="flex items-center justify-center p-8">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        ) : reportData.length === 0 ? (
+            <p className="text-center text-muted-foreground py-4">No data available to generate a report.</p>
+        ) : (
+            <Table>
+            <TableHeader>
+                <TableRow>
+                <TableHead>{t.vehicle}</TableHead>
+                <TableHead className="text-right">{t.totalIncome}</TableHead>
+                <TableHead className="text-right">{t.totalExpenses}</TableHead>
+                <TableHead className="text-right">{t.netProfit}</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {reportData.map((row) => (
+                <TableRow key={row.vehicleId}>
+                    <TableCell className="font-medium">{row.vehicleName}</TableCell>
+                    <TableCell className="text-right text-green-600">৳{row.income.toFixed(2)}</TableCell>
+                    <TableCell className="text-right text-red-600">৳{row.expenses.toFixed(2)}</TableCell>
+                    <TableCell className={`text-right font-bold ${row.profit >= 0 ? 'text-blue-600' : 'text-red-600'}`}>৳{row.profit.toFixed(2)}</TableCell>
+                </TableRow>
+                ))}
+                <TableRow className="font-bold bg-muted/50">
+                    <TableCell>Total</TableCell>
+                    <TableCell className="text-right">৳{totals.income.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">৳{totals.expenses.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">৳{totals.profit.toFixed(2)}</TableCell>
+                </TableRow>
+            </TableBody>
+            </Table>
+        )}
+      </CardContent>
+    </Card>
       {/* Monthly Summary Section */}
       <Card className="mt-8">
         <CardHeader>
