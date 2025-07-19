@@ -25,6 +25,7 @@ export function UserNav() {
 
   const handleLogout = async () => {
     await signOut(auth);
+    document.cookie = "token=; path=/; max-age=0";
     router.push("/login");
   };
 
