@@ -2,8 +2,9 @@
 "use client";
 
 import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 // Define the shape of the authentication context
@@ -22,8 +23,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Listen for authentication state changes (login/logout)
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          // Get the ID token and its result
+          const tokenResult = await user.getIdTokenResult();
+          // Check if the token is expired
+          const now = Date.now();
+          const exp = new Date(tokenResult.expirationTime).getTime();
+          if (exp < now) {
+            // Token expired, sign out
+            await signOut(auth);
+            setUser(null);
+          } else {
+            setUser(user);
+          }
+        } catch (error) {
+          // If any error occurs, sign out for safety
+          await signOut(auth);
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
 
@@ -48,8 +70,17 @@ export const useAuth = () => {
 
 // AuthGuard component to protect routes while loading auth state
 export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
-  const { loading } = useAuth();
-  if (loading) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  // Redirect to /login if not authenticated
+  React.useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/login');
+    }
+  }, [user, loading, router]);
+
+  if (loading || (!user && typeof window !== 'undefined')) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
