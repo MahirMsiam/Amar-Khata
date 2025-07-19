@@ -14,7 +14,7 @@ if (!getApps().length) {
 }
 
 export default async function VehiclesServerWrapper() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
   if (!token) {
