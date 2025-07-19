@@ -1,8 +1,8 @@
 "use client";
 
-import { AuthProvider, AuthGuard } from "@/context/AuthContext";
-import { LanguageProvider } from "@/context/LanguageContext";
 import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/context/AuthContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 import { ThemeProvider } from "next-themes";
 import React, { useEffect } from "react";
 
@@ -20,10 +20,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <LanguageProvider>
         <AuthProvider>
-          <AuthGuard>
+          {/* <AuthGuard> */}
             {children}
             <Toaster />
-          </AuthGuard>
+          {/* </AuthGuard> */}
         </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>
