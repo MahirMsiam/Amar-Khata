@@ -12,12 +12,12 @@ import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/context/LanguageContext";
@@ -50,7 +50,12 @@ export function LoginForm() {
     setIsLoading(true);
     try {
       // Call Firebase Auth API to sign in
-      await signInWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
+      // Get the ID token
+      const token = await user.getIdToken();
+      // Set the token as a cookie with proper options
+      document.cookie = `token=${token}; path=/; max-age=3600; SameSite=Lax;${window.location.protocol === 'https:' ? ' Secure;' : ''}`;
       // Redirect to dashboard on success
       router.push("/dashboard");
     } catch (error: any) {
