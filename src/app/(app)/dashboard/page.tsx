@@ -1,23 +1,32 @@
-import { AddTransactionSheet } from "@/components/dashboard/AddTransactionSheet";
-import { DashboardStats } from "@/components/dashboard/DashboardStats";
-import { ExpensesTable } from "@/components/dashboard/ExpensesTable";
-import { IncomeExpenseChart } from "@/components/dashboard/IncomeExpenseChart";
+import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function DashboardPage() {
-  return (
-    <div className="flex flex-1 flex-col gap-4 md:gap-8">
-      <div className="flex justify-end">
-          <AddTransactionSheet />
-      </div>
-      <DashboardStats />
-      <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-        <div className="xl:col-span-2">
-            <IncomeExpenseChart />
-        </div>
-        <div>
-            <ExpensesTable />
-        </div>
-      </div>
-    </div>
-  );
+if (!getApps().length) {
+  initializeApp({
+    credential: cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\n/g, '\n'),
+    }),
+  });
 }
+
+export default async function DashboardServerWrapper() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) {
+    redirect("/login");
+  }
+
+  try {
+    await getAuth().verifyIdToken(token!);
+    // If valid, render the client page
+    const DashboardPage = (await import("./page.client")).default;
+    return <DashboardPage />;
+  } catch {
+    redirect("/login");
+  }
+} 
