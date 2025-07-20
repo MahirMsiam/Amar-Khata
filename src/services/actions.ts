@@ -4,12 +4,12 @@
 import { realtimeDB } from '@/lib/firebase';
 import { updateProfile, type User as FirebaseUser } from 'firebase/auth';
 import {
-    get,
-    push,
-    ref,
-    remove,
-    set,
-    update,
+  get,
+  push,
+  ref,
+  remove,
+  set,
+  update,
 } from 'firebase/database';
 import type { Transaction } from './transactionService';
 import type { UserProfile } from './userService';
@@ -46,10 +46,7 @@ export const updateVehicle = async (userId: string, vehicleId: string, vehicleDa
     if (dataToUpdate.driverPhone === '') {
         dataToUpdate.driverPhone = null;
     }
-    
-    // Remove any other keys that might be undefined, which can happen in partial updates
     Object.keys(dataToUpdate).forEach(key => (dataToUpdate as any)[key] === undefined && delete (dataToUpdate as any)[key]);
-
     await update(vehicleRef, dataToUpdate);
 };
 
@@ -74,7 +71,6 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
 
     if (snapshot.exists()) {
         const profile = snapshot.val();
-        // Ensure email is included from auth if not in DB
         return { uid: snapshot.key, ...profile } as UserProfile;
     } else {
         console.log("No such user profile!");
