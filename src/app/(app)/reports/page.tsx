@@ -28,5 +28,5 @@ export default async function ReportsServerWrapper() {
     return <ReportsPage />;
   } catch {
     redirect("/login");
-  }
+}
 } 
