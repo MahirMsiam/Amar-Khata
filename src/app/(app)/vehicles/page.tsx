@@ -28,5 +28,5 @@ export default async function VehiclesServerWrapper() {
     return <VehiclesPage />;
   } catch {
     redirect("/login");
-  }
+}
 } 
