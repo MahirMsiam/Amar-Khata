@@ -20,17 +20,36 @@ if (!getApps().length) {
   }
 
   try {
+    // Use the private key as-is since it should be properly formatted in GitHub Actions
+    let formattedPrivateKey = privateKey;
+    
+    // Only do minimal processing - remove outer quotes if present
+    if (formattedPrivateKey.startsWith('"') && formattedPrivateKey.endsWith('"')) {
+      formattedPrivateKey = formattedPrivateKey.slice(1, -1);
+    }
+    
+    // Only replace escaped newlines if they exist (for local development)
+    if (formattedPrivateKey.includes('\\n')) {
+      formattedPrivateKey = formattedPrivateKey.replace(/\\n/g, '\n');
+    }
+
     initializeApp({
       credential: cert({
         projectId,
         clientEmail,
-        // Handle both escaped newlines (\n) and actual newlines
-        privateKey: privateKey.replace(/\\n/g, '\n'),
+        privateKey: formattedPrivateKey,
       }),
     });
     console.log("Firebase Admin initialized successfully");
   } catch (error) {
     console.error("Failed to initialize Firebase Admin:", error);
+    console.error("Environment check:", {
+      projectId: projectId?.substring(0, 10) + "...",
+      clientEmail: clientEmail?.substring(0, 20) + "...",
+      privateKeyLength: privateKey?.length,
+      privateKeyStart: privateKey?.substring(0, 30),
+      privateKeyEnd: privateKey?.substring(privateKey?.length - 30)
+    });
     throw error;
   }
 }
