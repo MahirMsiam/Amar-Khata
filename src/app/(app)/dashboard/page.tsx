@@ -28,5 +28,5 @@ export default async function DashboardServerWrapper() {
     return <DashboardPage />;
   } catch {
     redirect("/login");
-  }
+}
 } 
