@@ -4,7 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -20,6 +20,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/context/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
+import { auth } from "@/lib/firebase";
+import { updateUserProfileInDatabase } from "@/services/actions";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Loader2 } from "lucide-react";
 
 // Form validation schema
@@ -47,35 +50,77 @@ export function SignUpForm() {
     },
   });
 
+  // Function to get user-friendly error messages for signup
+  const getSignupErrorMessage = useCallback((errorCode: string): string => {
+    switch (errorCode) {
+      case 'auth/email-already-in-use':
+        return t.emailAlreadyInUse || "An account with this email already exists. Please use a different email or try logging in.";
+      case 'auth/weak-password':
+        return t.weakPassword || "The password is too weak. Please choose a stronger password with at least 6 characters.";
+      case 'auth/invalid-email':
+        return "Please enter a valid email address.";
+      case 'auth/operation-not-allowed':
+        return "Email/password accounts are not enabled. Please contact support.";
+      case 'auth/network-request-failed':
+        return t.networkError || "Network error. Please check your internet connection and try again.";
+      case 'auth/too-many-requests':
+        return t.tooManyRequests || "Too many signup attempts. Please wait a few minutes before trying again.";
+      case 'auth/admin-restricted-operation':
+        return "This operation is restricted. Please contact an administrator.";
+      default:
+        return "Signup failed. Please try again or contact support if the problem persists.";
+    }
+  }, [t]);
+
   // Handle form submission and sign up with Firebase Auth
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    alert("This app is not taking new users right now.");
-    return;
-    // setIsLoading(true);
-    // try {
-    //   // Call Firebase Auth API to create a new user
-    //   const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-    //   const user = userCredential.user;
-    //   // Update the user's display name in Firebase Auth
-    //   await updateProfile(user, { displayName: values.name });
-    //   // Save additional user profile info in the database
-    //   await updateUserProfileInDatabase(user, {
-    //     name: values.name,
-    //     email: values.email,
-    //     phone: values.phone,
-    //   });
-    //   // Redirect to dashboard on success
-    //   router.push("/dashboard");
-    // } catch (error: any) {
-    //   // Show error toast if sign up fails
-    //   toast({
-    //     variant: "destructive",
-    //     title: "Sign Up Failed",
-    //     description: error.message,
-    //   });
-    // } finally {
-    //   setIsLoading(false);
-    // }
+    setIsLoading(true);
+    try {
+      // Call Firebase Auth API to create a new user
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
+      
+      // Update the user's display name in Firebase Auth
+      await updateProfile(user, { displayName: values.name });
+      
+      // Save additional user profile info in the database
+      await updateUserProfileInDatabase(user, {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+      });
+      
+      toast({
+        title: "Account Created",
+        description: "Your account has been successfully created. Welcome!",
+      });
+      
+      // Redirect to dashboard on success
+      router.push("/dashboard");
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      
+      // Safely get error message without causing infinite loops
+      let errorMessage = "An unexpected error occurred during signup. Please try again.";
+      
+      if (error?.code && typeof error.code === 'string') {
+        try {
+          errorMessage = getSignupErrorMessage(error.code);
+        } catch (msgError) {
+          console.error('Error getting signup message:', msgError);
+          errorMessage = "An unexpected error occurred during signup. Please try again.";
+        }
+      }
+      
+      // Show error toast if sign up fails
+      toast({
+        variant: "destructive",
+        title: "Sign Up Failed",
+        description: errorMessage,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (

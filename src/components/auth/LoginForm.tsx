@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -45,6 +45,33 @@ export function LoginForm() {
     },
   });
 
+  // Function to get user-friendly error messages for login
+  const getLoginErrorMessage = useCallback((errorCode: string): string => {
+    switch (errorCode) {
+      case 'auth/user-not-found':
+      case 'auth/wrong-password':
+      case 'auth/invalid-credential':
+      case 'auth/invalid-login-credentials':
+        return t.invalidCredentials || "Invalid email or password. Please check your credentials and try again.";
+      case 'auth/user-disabled':
+        return t.accountDisabled || "Your account has been disabled. Please contact support for assistance.";
+      case 'auth/too-many-requests':
+        return t.tooManyRequests || "Too many failed login attempts. Please wait a few minutes before trying again.";
+      case 'auth/network-request-failed':
+        return t.networkError || "Network error. Please check your internet connection and try again.";
+      case 'auth/invalid-email':
+        return "Please enter a valid email address.";
+      case 'auth/missing-password':
+        return "Please enter your password.";
+      case 'auth/weak-password':
+        return t.weakPassword || "Password is too weak. Please use at least 6 characters.";
+      case 'auth/email-already-in-use':
+        return t.emailAlreadyInUse || "An account with this email already exists. Please try logging in instead.";
+      default:
+        return "Login failed. Please try again or contact support if the problem persists.";
+    }
+  }, [t]);
+
   // Handle form submission and sign in with Firebase Auth
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -59,17 +86,17 @@ export function LoginForm() {
       // Redirect to dashboard on success
       router.push("/dashboard");
     } catch (error: any) {
+      console.error('Login error:', error);
+      
+      const errorMessage = error.code 
+        ? getLoginErrorMessage(error.code)
+        : "An unexpected error occurred during login. Please try again.";
+      
       // Show error toast if sign in fails
-      let description = "An unexpected error occurred. Please try again.";
-      if (error.code === "auth/user-disabled") {
-        description = "Your account has been disabled. Please contact support for assistance.";
-      } else if (error.code === "auth/wrong-password" || error.code === "auth/user-not-found") {
-        description = "Invalid email or password.";
-      }
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description,
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
